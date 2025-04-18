@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express";
 const verifyTask = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "").trim();
-
+    console.log("Token:", token);
     if (!token) {
       res.status(401).json({ error: "Authorization token missing" });
       return;
@@ -18,7 +18,7 @@ const verifyTask = async (req: Request, res: Response, next: NextFunction): Prom
         user: true,
       },
     });
-
+    console.log("Credential:", credential);
     if (!credential || !credential.user) {
       res.status(401).json({ error: "Invalid or expired token" });
       return

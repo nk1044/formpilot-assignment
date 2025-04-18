@@ -42,7 +42,6 @@ model Task {
   id            Int        @id @default(autoincrement())
   userId        Int
   credentialId  Int
-  status        String     @default("pending")
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
   txHash        String     @unique

@@ -17,7 +17,8 @@ const createTask: RequestHandler = async (req: Request, res: Response) => {
         credentialId,
       },
     });
-
+    console.log("Task Created:", task);
+    
     res.status(201).json(task);
   } catch (error) {
     console.error("Create Task Error:", error);
@@ -73,7 +74,7 @@ const getTaskById: RequestHandler = async (req: Request, res: Response) => {
 const updateTask: RequestHandler = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { status, value } = req.body;
+    const { value } = req.body;
     const userId = (req as any).user.id;
 
     const task = await prisma.task.findFirst({
@@ -88,7 +89,6 @@ const updateTask: RequestHandler = async (req: Request, res: Response) => {
     const updatedTask = await prisma.task.update({
       where: { id: Number(id) },
       data: {
-        status: status ?? task.status,
         value: value ?? task.value,
       },
     });
