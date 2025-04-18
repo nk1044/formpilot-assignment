@@ -1,33 +1,17 @@
 import prisma from "../prisma.js";
-import { nanoid } from "nanoid";
+
 
 export interface User {
   id: number;
   name: string;
   email: string;
-  apikey: string;
-  apiurl: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 class UserModel {
   // Create a new user
   static async createUser(data: { name: string; email: string }) {
-
-    if (!data.name || !data.email) {
-      return null
-    }
-
-    const apiKey = `key_${nanoid(24)}`;
-    const apiUrl = `https://localhost:8002/api/tasks/${nanoid(12)}`;
-
     return await prisma.user.create({
-        data: {
-          ...data,
-          apikey: apiKey,
-          apiurl: apiUrl,
-        },
+      data,
     });
   }
 
