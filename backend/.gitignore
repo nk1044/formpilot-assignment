@@ -25,6 +25,8 @@ dist-ssr
 
 /src/generated/
 
+prisma/migrations/
+
 /prisma/edge.js
 /prisma/index.js
 
