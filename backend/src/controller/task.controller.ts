@@ -1,23 +1,135 @@
 import prisma from "../prisma.js";
 import { Request, Response, RequestHandler } from "express";
-import { nanoid } from "nanoid";
+
+
+const createTask: RequestHandler = async (req: Request, res: Response) => {
+  try {
+    const { value, txHash }:{value:string, txHash:string} = req.body;
+    
+    const userId = (req as any).user.id;
+    const credentialId = (req as any).credential.id;
+
+    const task = await prisma.task.create({
+      data: {
+        value: value ?? null,
+        txHash,
+        userId,
+        credentialId,
+      },
+    });
+
+    res.status(201).json(task);
+  } catch (error) {
+    console.error("Create Task Error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 const getAllTasks: RequestHandler = async (req: Request, res: Response) => {
   try {
+    const userId = (req as any).user.id;
+
     const tasks = await prisma.task.findMany({
+      where: { userId },
       include: {
         user: true,
+        credential: true,
       },
     });
-    res.json(tasks);
-    return;
+
+    res.status(200).json(tasks);
   } catch (error) {
-    console.error(error);
+    console.error("Get All Tasks Error:", error);
     res.status(500).json({ error: "Internal server error" });
-    return;
   }
-}
+};
+
+// Get a specific task by ID
+const getTaskById: RequestHandler = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const userId = (req as any).user.id;
+
+    const task = await prisma.task.findFirst({
+      where: {
+        id: Number(id),
+        userId,
+      },
+    });
+
+    if (!task) {
+      res.status(404).json({ message: "Task not found" });
+      return;
+    }
+
+    res.status(200).json(task);
+  } catch (error) {
+    console.error("Get Task By ID Error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Update task (status or value)
+const updateTask: RequestHandler = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { status, value } = req.body;
+    const userId = (req as any).user.id;
+
+    const task = await prisma.task.findFirst({
+      where: { id: Number(id), userId },
+    });
+
+    if (!task) {
+      res.status(404).json({ message: "Task not found" });
+      return;
+    }
+
+    const updatedTask = await prisma.task.update({
+      where: { id: Number(id) },
+      data: {
+        status: status ?? task.status,
+        value: value ?? task.value,
+      },
+    });
+
+    res.status(200).json(updatedTask);
+  } catch (error) {
+    console.error("Update Task Error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Delete a task
+const deleteTask: RequestHandler = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const userId = (req as any).user.id;
+
+    const task = await prisma.task.findFirst({
+      where: { id: Number(id), userId },
+    });
+
+    if (!task) {
+      res.status(404).json({ message: "Task not found" });
+      return;
+    }
+
+    await prisma.task.delete({
+      where: { id: Number(id) },
+    });
+
+    res.status(200).json({ message: "Task deleted successfully" });
+  } catch (error) {
+    console.error("Delete Task Error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 export {
-    getAllTasks,
-}
+  createTask,
+  getAllTasks,
+  getTaskById,
+  updateTask,
+  deleteTask,
+};
