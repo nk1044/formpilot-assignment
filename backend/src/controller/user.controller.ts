@@ -1,49 +1,94 @@
 import prisma from "../prisma.js";
 import { Request, Response, RequestHandler } from "express";
-import {verifyGoogleToken} from '../config/auth.config.js';
+import { verifyGoogleToken } from '../config/auth.config.js';
+import { nanoid } from "nanoid";
 
 interface GoogleUser {
     email: string;
     given_name: string;
-    family_name?: string;
-  }
-
-
-interface GoogleUser {
-  email: string;
-  given_name: string;
-  family_name?: string;
 }
 
 const RegisterUser: RequestHandler = async (req, res) => {
-  try {
-    const { token } = req.body;
-    // console.log("token", token);
-    const googleUser = await verifyGoogleToken(token) as GoogleUser | null;
-    if (!googleUser) {
-      res.status(400).json({ message: "Invalid Google token" });
-      return;
+    try {
+        const { token } = req.body;
+
+        if (!token) {
+            res.status(400).json({ message: "Token is required" });
+            return;
+        }
+
+        const googleUser = await verifyGoogleToken(token) as GoogleUser | null;
+
+        if (!googleUser) {
+            res.status(400).json({ message: "Invalid Google token" });
+            return;
+        }
+
+        const { email, given_name: name } = googleUser;
+
+        const existingUser = await prisma.user.findUnique({ where: { email } });
+        if (existingUser) {
+            res.status(400).json({ message: "User already exists" });
+            return;
+        }
+
+        const apiKey = `formpilot_${nanoid(10)}`;
+        const apiUrl = `https://localhost:8002/tasks/${nanoid(10)}`;
+
+        const newUser = await prisma.user.create({
+            data: { name, email, apiKey, apiUrl },
+        });
+
+        res.status(201).json({
+            message: "User registered successfully",
+            user: newUser,
+        });
+        return;
+    } catch (error) {
+        console.error("RegisterUser Error:", error);
+        res.status(500).json({ message: "Internal server error" });
+        return;
     }
-
-    const name = googleUser.given_name;
-    const email = googleUser.email;
-
-    // Here you could create/find user in DB
-
-    res.status(200).json({
-      message: "User registered successfully",
-      user: googleUser,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
 };
 
 
 const LoginUser = async (req: Request, res: Response) => {
+    try {
+        const { token } = req.body;
 
+        if (!token) {
+            res.status(400).json({ message: "Token is required" });
+            return;
+        }
+
+        const googleUser = await verifyGoogleToken(token) as GoogleUser | null;
+
+        if (!googleUser) {
+            res.status(400).json({ message: "Invalid Google token" });
+            return;
+        }
+
+        const { email } = googleUser;
+
+        const existingUser = await prisma.user.findUnique({ where: { email } });
+        if (!existingUser) {
+            res.status(400).json({ message: "User not found" });
+            return;
+        }
+        
+        res.status(201)
+            .json({
+                message: "User logged in successfully",
+                user: existingUser,
+            });
+        return;
+    } catch (error) {
+        console.error("LoginUser Error:", error);
+        res.status(500).json({ message: "Internal server error" });
+        return;
+    }
 }
+
 
 
 export {
