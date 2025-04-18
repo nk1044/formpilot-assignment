@@ -1,9 +1,5 @@
 import axios from "axios";
-
-interface TaskData {
-    value: string;
-    txHash: string;
-  }
+import { TaskData } from "./interfaces";
   
   function getEnvValue(suffix: string): string | undefined {
     return Object.entries(process.env).find(([key]) => key.endsWith(suffix))?.[1];

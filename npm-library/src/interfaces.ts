@@ -1,10 +1,9 @@
 
-
-export interface Task {
-    ID: string;
-    Title: string;
-    Description: string;
-    Status: string;
-    CreatedAt: string;
-    UpdatedAt: string;
+interface TaskData {
+    value: string;
+    txHash: string;
   }
+
+export {
+    TaskData,
+}
