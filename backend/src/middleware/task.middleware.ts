@@ -1,12 +1,13 @@
 import prisma from "../prisma.js";
 import { Request, Response, NextFunction } from "express";
 
-const verifyTask = async (req: Request, res: Response, next: NextFunction) => {
+const verifyTask = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "").trim();
 
     if (!token) {
-      return res.status(401).json({ error: "Authorization token missing" });
+      res.status(401).json({ error: "Authorization token missing" });
+      return;
     }
 
     const credential = await prisma.credential.findUnique({
@@ -19,8 +20,10 @@ const verifyTask = async (req: Request, res: Response, next: NextFunction) => {
     });
 
     if (!credential || !credential.user) {
-      return res.status(401).json({ error: "Invalid or expired token" });
+      res.status(401).json({ error: "Invalid or expired token" });
+      return
     }
+
 
     (req as any).user = credential.user;
     (req as any).credential = credential;
@@ -29,6 +32,7 @@ const verifyTask = async (req: Request, res: Response, next: NextFunction) => {
   } catch (error) {
     console.error("verifyTask middleware error:", error);
     res.status(500).json({ error: "Internal server error" });
+    return;
   }
 };
 

@@ -44,7 +44,7 @@ const getAllTasks: RequestHandler = async (req: Request, res: Response) => {
   }
 };
 
-// Get a specific task by ID
+
 const getTaskById: RequestHandler = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -69,7 +69,7 @@ const getTaskById: RequestHandler = async (req: Request, res: Response) => {
   }
 };
 
-// Update task (status or value)
+
 const updateTask: RequestHandler = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -100,7 +100,7 @@ const updateTask: RequestHandler = async (req: Request, res: Response) => {
   }
 };
 
-// Delete a task
+
 const deleteTask: RequestHandler = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
