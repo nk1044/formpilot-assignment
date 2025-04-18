@@ -14,7 +14,7 @@ function Home() {
   }
 
 
-  const [tasks, setTasks] = useState(Array<any>);
+  const [tasks, setTasks] = useState<Array<any>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ function Home() {
   const fetchTasks = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await GetAllTasks();
+      const response = await GetAllTasks() ?? [];
 
       setTasks(response);
       setError('');
@@ -50,7 +50,7 @@ function Home() {
       console.log('Task created:', result);
       if (result && result?.ID) {
         navigate('/task/' + result.ID);
-        await fetchTasks(); // Refresh task list
+        await fetchTasks();
       }
     } catch (err) {
       console.error('Error creating task:', err);
@@ -58,12 +58,12 @@ function Home() {
   };
 
   const handleDeleteTask = async (id: string, e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation(); // Prevent task selection
+    e.stopPropagation();
 
     if (confirm('Are you sure you want to delete this task?')) {
       try {
         await DeleteTask(id);
-        await fetchTasks(); // Refresh task list
+        await fetchTasks();
       } catch (err) {
         console.error('Error deleting task:', err);
       }
