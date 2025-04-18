@@ -32,7 +32,7 @@ const RegisterUser: RequestHandler = async (req, res) => {
             return;
         }
 
-        const apiKey = `formpilot_${nanoid(10)}`;
+        const apiKey = `formpilot_${nanoid(30)}`;
         const apiUrl = `https://localhost:8002/tasks/${nanoid(10)}`;
 
         const newUser = await prisma.user.create({
