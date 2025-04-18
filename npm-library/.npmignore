@@ -1,0 +1,42 @@
+# Source files
+src/
+tests/
+test/
+__tests__/
+*.test.ts
+*.spec.ts
+
+# TypeScript config files
+tsconfig.json
+tsconfig.*.json
+
+# Development files
+.gitignore
+.travis.yml
+.eslintrc
+.eslintignore
+.prettierrc
+.editorconfig
+jest.config.js
+
+# IDE files
+.vscode/
+.idea/
+
+# Build process
+webpack.config.js
+rollup.config.js
+gulpfile.js
+
+# Documentation
+docs/
+documentation/
+*.md
+!README.md
+
+# Misc
+coverage/
+.nyc_output/
+*.log
+.DS_Store
+node_modules/
