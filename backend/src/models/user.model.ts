@@ -1,5 +1,5 @@
 import prisma from "../prisma.js";
-
+import { nanoid } from "nanoid";
 
 export interface User {
   id: number;
@@ -10,8 +10,12 @@ export interface User {
 class UserModel {
   // Create a new user
   static async createUser(data: { name: string; email: string }) {
+    const apiKey = `$formpilot{nanoid(20)}`;
+    const apiUrl = `https://localhost:8002/tasks/${nanoid(10)}`;
     return await prisma.user.create({
-      data,
+      ...data,
+      apiKey,
+      apiUrl
     });
   }
 

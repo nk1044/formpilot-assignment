@@ -23,6 +23,12 @@ dist-ssr
 *.gz
 *.exe
 
+/src/generated/
+
+/prisma/edge.js
+/prisma/index.js
+
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
