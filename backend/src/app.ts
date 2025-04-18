@@ -21,3 +21,6 @@ app.get('/health-check', (req:Request, res:Response) => {
 
 import authRoute from './routes/auth.route.js';
 app.use('/api/auth', authRoute);
+
+import taskRoutes from './routes/task.route.js';
+app.use('/api/v1', taskRoutes);
