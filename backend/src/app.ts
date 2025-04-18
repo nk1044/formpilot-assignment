@@ -19,6 +19,5 @@ app.get('/health-check', (req:Request, res:Response) => {
   res.send('server is healthy');
 });
 
-// import authRouter from './routes/auth.route.js'
-
-// app.use('/api/auth', authRouter);
+import authRoute from './routes/auth.route.js';
+app.use('/api/auth', authRoute);

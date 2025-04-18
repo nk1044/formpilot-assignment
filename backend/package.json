@@ -4,8 +4,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon",
-    "build": "tsc -b"
+    "start": "nodemon --exec 'node --import tsx' src/index.ts",
+    "build": "tsc -b",
+    "prisma:generate": "prisma generate"
   },
   "keywords": [],
   "author": "",
@@ -18,14 +19,17 @@
     "@types/nanoid": "^2.1.0",
     "@types/node": "^22.14.1",
     "nodemon": "^3.1.9",
+    "prisma": "^6.6.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.3",
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@prisma/client": "^6.6.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "google-auth-library": "^9.15.1",
     "nanoid": "^5.1.5"
   }
 }
