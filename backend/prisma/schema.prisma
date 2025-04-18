@@ -9,16 +9,43 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  apiKey    String   @unique
-  apiUrl String   @unique
-  credits   Int      @default(4)
-  availableCredits Int      @default(4)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            Int        @id @default(autoincrement())
+  email         String     @unique
+  name          String?
+  credits       Int        @default(4)
+  creditUpdates Int        @default(0)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  credential    Credential?
+  tasks         Task[]
+}
+
+model Credential {
+  id                   Int      @id @default(autoincrement())
+  userId               Int      @unique
+  user                 User     @relation(fields: [userId], references: [id])
+  apiKey               String   @unique
+  apiUrl               String   @unique
+  usageCount           Int      @default(0)
+  availableUsageCount  Int      @default(4)
+  updateCount          Int      @default(0)
+  availableUpdateCount Int      @default(2)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  tasks                Task[]
+}
+
+model Task {
+  id            Int        @id @default(autoincrement())
+  userId        Int
+  credentialId  Int
+  status        String     @default("pending")
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  user          User       @relation(fields: [userId], references: [id])
+  credential    Credential @relation(fields: [credentialId], references: [id])
 }
