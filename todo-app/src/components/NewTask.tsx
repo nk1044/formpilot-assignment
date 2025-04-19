@@ -1,14 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { GetTask, UpdateTask, DeleteTask } from '../server/server';
+import React, { useState } from 'react';
+import { CreateTask } from '../server/server';
 import { ArrowLeft, Save, Trash2 } from 'lucide-react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { nanoid } from 'nanoid';
 
-function Task() {
-  const { txHash } = useParams();
+function NewTask() {
   const navigate = useNavigate();
-  console.log('txHash:', txHash);
-  
 
   type TaskType = {
     id?: number;
@@ -22,44 +19,9 @@ function Task() {
     txHash: `Task-${nanoid(6)}`,
     value: 'Add a description for your task...'
   });
-  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [isSaving, setIsSaving] = useState<boolean>(false);
-  const [isEdited, setIsEdited] = useState<boolean>(false);
-
-  useEffect(() => {
-    
-    const fetchTask = async () => {
-      setLoading(true);
-      try {
-        if (!txHash) {
-          setError('Invalid task identifier');
-          setLoading(false);
-          return;
-        }
-        
-        const response = await GetTask(txHash as string);
-        console.log('Task fetched:', response);
-        if (response) {
-          setTask({
-            id: response.id as number,
-            txHash: response.txHash || 'Untitled Task',
-            value: response.value || 'Add a description for your task...'
-          });
-          setError('');
-        } else {
-          setError('Task not found');
-        }
-      } catch (err) {
-        console.error('Error fetching task:', err);
-        setError('Failed to load task. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchTask();
-  }, [txHash]);
+  const [isEdited, setIsEdited] = useState<boolean>(true);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -73,17 +35,16 @@ function Task() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      const newTask = {
+        txHash: task.txHash || `Task-${nanoid(6)}`,
+        value: task.value
+      };
       
-        const result = await UpdateTask({
-          txHash: txHash as string,
-          value: task.value,
-        });
-        if (result) {
-          setIsEdited(false);
-        } else {
-          setError('Failed to save task. Please try again.');
-        }
-
+      const result = await CreateTask(newTask);
+      if (result && result.txHash) {
+        navigate(`/task/${result.txHash}`, { replace: true });
+        setIsEdited(false);
+      }
     } catch (err) {
       console.error('Error saving task:', err);
       setError('Failed to save task. Please try again.');
@@ -92,28 +53,9 @@ function Task() {
     }
   };
 
-  const handleDelete = async () => {
-   
-    if (window.confirm('Are you sure you want to delete this task?')) {
-      try {
-        if (txHash) {
-          await DeleteTask(txHash);
-          navigate('/');
-        }
-      } catch (err) {
-        console.error('Error deleting task:', err);
-        setError('Failed to delete task. Please try again.');
-      }
-    }
+  const handleCancel = () => {
+    navigate('/');
   };
-
-  if (loading) {
-    return (
-      <div className="w-full h-screen bg-neutral-950 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -148,12 +90,12 @@ function Task() {
             
             <button
               className={`p-2 rounded-md text-white ${
-                isEdited
+                isEdited 
                   ? 'bg-indigo-600 hover:bg-indigo-700'
                   : 'bg-neutral-700 cursor-not-allowed'
               } transition-colors flex items-center gap-1`}
               onClick={handleSave}
-              disabled={(!isEdited) || isSaving}
+              disabled={!isEdited || isSaving}
             >
               <Save size={16} />
               <span>{isSaving ? 'Saving...' : 'Save'}</span>
@@ -161,7 +103,7 @@ function Task() {
             
             <button
               className="p-2 rounded-md text-neutral-400 hover:text-red-400 hover:bg-neutral-800 transition-colors"
-              onClick={handleDelete}
+              onClick={handleCancel}
             >
               <Trash2 size={16} />
             </button>
@@ -192,10 +134,13 @@ function Task() {
             />
           </div>
           
+          <div className="text-xs text-neutral-500 mt-8">
+            New task
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-export default Task;
+export default NewTask;

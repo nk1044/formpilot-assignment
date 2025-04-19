@@ -11,9 +11,11 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.4",
+    "@types/nanoid": "^2.1.0",
     "axios": "^1.8.4",
     "i": "^0.3.7",
     "lucide-react": "^0.501.0",
+    "nanoid": "^5.1.5",
     "neeraj-iitj-crud": "^1.0.2",
     "npm": "^11.3.0",
     "react": "^19.0.0",

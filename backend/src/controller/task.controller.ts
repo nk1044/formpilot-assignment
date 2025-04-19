@@ -1,3 +1,4 @@
+import { log } from "console";
 import prisma from "../prisma.js";
 import { Request, Response, RequestHandler } from "express";
 
@@ -45,12 +46,12 @@ const getAllTasks: RequestHandler = async (req: Request, res: Response) => {
 
 const getTaskById: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { txHash } = req.params;
     const userId = (req as any).user.id;
-
+    console.log("Fetching task with txHash:", txHash);
     const task = await prisma.task.findFirst({
       where: {
-        id: Number(id),
+        txHash: txHash as string,
         userId,
       },
     });
@@ -70,12 +71,12 @@ const getTaskById: RequestHandler = async (req: Request, res: Response) => {
 
 const updateTask: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { txHash } = req.params;
     const { value } = req.body;
     const userId = (req as any).user.id;
 
     const task = await prisma.task.findFirst({
-      where: { id: Number(id), userId },
+      where: { txHash: txHash, userId },
     });
 
     if (!task) {
@@ -84,7 +85,7 @@ const updateTask: RequestHandler = async (req: Request, res: Response) => {
     }
 
     const updatedTask = await prisma.task.update({
-      where: { id: Number(id) },
+      where: { id: task.id },
       data: {
         value: value ?? task.value,
       },
@@ -100,11 +101,12 @@ const updateTask: RequestHandler = async (req: Request, res: Response) => {
 
 const deleteTask: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { txHash } = req.params;
     const userId = (req as any).user.id;
-
+    console.log("Deleting task with txHash:", txHash);
+    
     const task = await prisma.task.findFirst({
-      where: { id: Number(id), userId },
+      where: { txHash: txHash, userId },
     });
 
     if (!task) {
@@ -113,7 +115,7 @@ const deleteTask: RequestHandler = async (req: Request, res: Response) => {
     }
 
     await prisma.task.delete({
-      where: { id: Number(id) },
+      where: { id: Number(task.id) },
     });
 
     res.status(200).json({ message: "Task deleted successfully" });

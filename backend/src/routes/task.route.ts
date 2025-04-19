@@ -6,8 +6,8 @@ const router = express.Router();
 
 router.route("/tasks").post(verifyTask, createTask);
 router.route("/tasks").get(verifyTask, getAllTasks);
-router.route("/tasks/:id").get(verifyTask, getTaskById);
-router.route("/tasks/:id").put(verifyTask, updateTask);
-router.route("/tasks/:id").delete(verifyTask, deleteTask);
+router.route("/tasks/:txHash").get(verifyTask, getTaskById);
+router.route("/tasks/:txHash").put(verifyTask, updateTask);
+router.route("/tasks/:txHash").delete(verifyTask, deleteTask);
 
 export default router;

@@ -39,7 +39,7 @@ class CrudLibrary {
     };
   }
 
-  async create(data: TaskData): Promise<{ id: string; status: string }> {
+  async create(data: TaskData): Promise<{ txHash: string; value: string }> {
     const res = await axios.post(`${this.apiUrl}/tasks`, data, {
       headers: this.getHeaders(),
     });
@@ -47,22 +47,23 @@ class CrudLibrary {
     return res.data;
   }
 
-  async get(id: string): Promise<TaskData> {
-    const res = await axios.get(`${this.apiUrl}/tasks/${id}`, {
+  
+  async get(txHash: string): Promise<TaskData> {
+    const res = await axios.get(`${this.apiUrl}/tasks/${txHash}`, {
       headers: this.getHeaders(),
     });
     return res.data;
   }
 
-  async update(id: string, data: TaskData): Promise<{ status: string }> {
-    const res = await axios.put(`${this.apiUrl}/tasks/${id}`, data, {
+  async update(txHash: string, value: string): Promise<TaskData> {
+    const res = await axios.put(`${this.apiUrl}/tasks/${txHash}`, {value:value}, {
       headers: this.getHeaders(),
     });
     return res.data;
   }
 
-  async delete(id: string): Promise<{ status: string }> {
-    const res = await axios.delete(`${this.apiUrl}/tasks/${id}`, {
+  async delete(txHash: string): Promise<{ status: string }> {
+    const res = await axios.delete(`${this.apiUrl}/tasks/${txHash}`, {
       headers: this.getHeaders(),
     });
     return res.data;
