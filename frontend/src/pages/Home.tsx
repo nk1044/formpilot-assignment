@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import { login, register } from "../server/server";
+
 
 function Home() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(()=> localStorage.getItem("userFormpilot") ? JSON.parse(localStorage.getItem("userFormpilot") as string) : null);
   const [error, setError] = useState<string | null>(null);
   const [pageMode, setPageMode] = useState<"login" | "register">("login");
   const navigate = useNavigate();
@@ -11,10 +13,24 @@ function Home() {
   const handleGoogleLogin = async (credentialResponse: CredentialResponse) => {
     if (credentialResponse.credential) {
       console.log("Google Credential Response:", credentialResponse);
-      // You'd typically send the credential to your backend here
-      localStorage.setItem("user", JSON.stringify({ credential: credentialResponse.credential }));
+      let response = null;
+      try {
+        if (pageMode === "login") {
+          response = await login(credentialResponse.credential);
+          setUser(response.user);
+        } else {
+          response = await register(credentialResponse.credential);
+          setUser(response.user);
+        }
+      } catch (error) {
+        console.error("Error during Google authentication:", error);
+        setError("Google authentication failed. Please try again.");
+        return;
+      }
+      localStorage.setItem("userFormpilot", JSON.stringify(response?.user));
       setUser({ credential: credentialResponse.credential });
       setError(null);
+      
     } else {
       setError("Failed to retrieve Google credentials.");
     }
@@ -28,9 +44,9 @@ function Home() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
+    localStorage.removeItem("userFormpilot");
     setUser(null);
-    navigate("/auth");
+    navigate("/");
   };
 
   return (
@@ -70,7 +86,8 @@ function Home() {
             </div>
           )}
 
-          <div className="mt-6">
+          {user && (
+            <div className="mt-6">
             <p className="text-center cursor-pointer text-neutral-400 mt-6 text-sm">
               {pageMode === "login" ? (
                 <>
@@ -95,6 +112,7 @@ function Home() {
               )}
             </p>
           </div>
+          )}
         </div>
       </div>
     </GoogleOAuthProvider>
