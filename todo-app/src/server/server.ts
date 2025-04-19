@@ -39,6 +39,10 @@ const DeleteTask = async (taskId: string): Promise<boolean> => {
   try {
    const response = await crudLibrary.delete(taskId);
     // console.log("Task deleted successfully:", response);
+    if (!response) {
+      console.error("Failed to delete task");
+      return false;
+    }
     return true;
   } catch (error) {
     console.error("Error in DeleteTask:", error);

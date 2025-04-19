@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CreateTask, DeleteTask, GetAllTasks } from '../server/server';
+import { DeleteTask, GetAllTasks } from '../server/server';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 
 function Home() {
