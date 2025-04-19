@@ -151,11 +151,7 @@ function Home() {
               </div>
             ) : (
               <div className="space-y-6">
-                <div className="bg-neutral-700/30 p-4 rounded-lg border border-neutral-700">
-                  <p className="text-center text-sm">
-                    Logged in as <span className="font-medium">{user.name || user.email}</span>
-                  </p>
-                </div>
+                
                 <div className="flex flex-col gap-3">
                   <Link to="/dashboard" className="w-full">
                     <button className="w-full px-6 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg">
