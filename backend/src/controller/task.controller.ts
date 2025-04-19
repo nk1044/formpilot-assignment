@@ -33,10 +33,6 @@ const getAllTasks: RequestHandler = async (req: Request, res: Response) => {
 
     const tasks = await prisma.task.findMany({
       where: { userId },
-      include: {
-        user: true,
-        credential: true,
-      },
     });
 
     res.status(200).json(tasks);
