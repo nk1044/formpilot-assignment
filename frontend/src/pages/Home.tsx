@@ -33,7 +33,12 @@ function Home() {
         setError(null);
       } catch (error) {
         console.error("Error during Google authentication:", error);
-        setError("Google authentication failed. Please try again.");
+        setError(
+          (error as any)?.response?.data?.message ||
+          (error as any)?.response?.data ||
+          "An error occurred during authentication."
+        );
+        
       } finally {
         setLoading(false);
       }

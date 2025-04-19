@@ -3,6 +3,7 @@ import {RequestHandler } from "express";
 import { verifyGoogleToken } from '../config/auth.config.js';
 import { nanoid } from "nanoid";
 import jwt from "jsonwebtoken";
+import {sendAdminNotification} from '../config/mail.js';
 
 interface GoogleUser {
     email: string;
@@ -174,8 +175,65 @@ const GetUser: RequestHandler = async (req, res) => {
     }
 };
 
+
+const UpdateCredits: RequestHandler = async (req, res) => {
+    try {
+      const userId = (req as any).user.id;
+  
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: {
+          credential: true,
+        },
+      });
+  
+      if (!user || !user.credential) {
+          res.status(404).json({ message: "User not found" });
+          return 
+      }
+  
+      if (user.credential.updateCount >= user.credential.availableUpdateCount) {
+          res.status(400).json({ message: "No credits available" });
+        return;
+      }
+      const creditsAdded = 4;
+    await sendAdminNotification(user.email, creditsAdded);
+  
+      const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: {
+          credential: {
+            update: {
+              updateCount: {
+                increment: 1,
+              },
+              availableUsageCount: {
+                increment: 4,
+              },
+            },
+          },
+        },
+        include: {
+          credential: true,
+        },
+      });
+  
+      res.status(200).json({
+        message: "Credits updated successfully",
+        user: updatedUser,
+      });
+      return;
+    } catch (error) {
+      console.error("UpdateCredits Error:", error);
+      res.status(500).json({ message: "Internal server error" });
+      return;
+    }
+  };
+
+
 export {
     LoginUser,
     RegisterUser,
     GetUser,
+    UpdateCredits,
 };
