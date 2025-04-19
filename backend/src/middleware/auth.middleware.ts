@@ -22,7 +22,7 @@ const verifyUser = async (
       req.cookies?.accessToken ||
       req.header("Authorization")?.replace("Bearer ", "").trim();
     
-      console.log("Token from cookies or header:", token);
+      // console.log("Token from cookies or header:", token);
 
     if (!token) {
     res.status(401).json({ error: "Authorization token missing" });

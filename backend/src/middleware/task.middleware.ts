@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express";
 const verifyTask = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "").trim();
-    console.log("Token:", token);
+    // console.log("Token:", token);
     if (!token) {
       res.status(401).json({ error: "Authorization token missing" });
       return;

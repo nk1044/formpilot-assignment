@@ -8,7 +8,7 @@ const login = async (token: string) => {
     const response = await axios.post(`${backendUrl}/api/auth/login`, {
       token,
     });
-    console.log("Login response:", response.data);
+    // console.log("Login response:", response.data);
     return response.data;
   } catch (error) {
     console.error("Login error:", error);

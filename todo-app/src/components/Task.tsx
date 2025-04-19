@@ -7,7 +7,7 @@ import { nanoid } from 'nanoid';
 function Task() {
   const { txHash } = useParams();
   const navigate = useNavigate();
-  console.log('txHash:', txHash);
+  // console.log('txHash:', txHash);
   
 
   type TaskType = {

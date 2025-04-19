@@ -1,5 +1,4 @@
-import {CrudLibrary} from '../../../npm-library/src/index';
-// import { CrudLibrary } from 'neeraj-iitj-crud';
+import { CrudLibrary } from 'neeraj-iitj-crud';
 
 
 const crudLibrary = new CrudLibrary(
@@ -17,7 +16,7 @@ export interface Task {
 const GetAllTasks = async () => {
   try {
     const response = await crudLibrary.getAll();
-    console.log("Tasks fetched successfully:", response);
+    // console.log("Tasks fetched successfully:", response);
     return response;
   } catch (error) {
     console.error("Error in GetAllTasks:", error);
@@ -28,7 +27,7 @@ const GetAllTasks = async () => {
 const CreateTask = async (task: any): Promise<Task | null> => {
   try {
     const response = await crudLibrary.create(task);
-    console.log("Task created successfully:", response);
+    // console.log("Task created successfully:", response);
     return response as any;
   } catch (error) {
     console.error("Error in CreateTask:", error);
@@ -39,7 +38,7 @@ const CreateTask = async (task: any): Promise<Task | null> => {
 const DeleteTask = async (taskId: string): Promise<boolean> => {
   try {
    const response = await crudLibrary.delete(taskId);
-    console.log("Task deleted successfully:", response);
+    // console.log("Task deleted successfully:", response);
     return true;
   } catch (error) {
     console.error("Error in DeleteTask:", error);
@@ -50,7 +49,7 @@ const DeleteTask = async (taskId: string): Promise<boolean> => {
 const UpdateTask = async (task: Task): Promise<Task | null> => {
   try {
     const response = await crudLibrary.update(task.txHash as string, task.value as string);
-    console.log("Task updated successfully:", response);
+    // console.log("Task updated successfully:", response);
     return response;
   } catch (error) {
     console.error("Error in UpdateTask:", error);
@@ -60,9 +59,9 @@ const UpdateTask = async (task: Task): Promise<Task | null> => {
 
 const GetTask = async (txHash: string): Promise<Task | null> => {
   try {
-    console.log("Fetching task with txHash:", txHash);
+    // console.log("Fetching task with txHash:", txHash);
     const response = await crudLibrary.get(txHash);
-    console.log("Task fetched successfully:", response);
+    // console.log("Task fetched successfully:", response);
     return response;
   } catch (error) {
     console.error("Error in GetTaskById:", error);

@@ -18,7 +18,7 @@ const createTask: RequestHandler = async (req: Request, res: Response) => {
         credentialId,
       },
     });
-    console.log("Task Created:", task);
+    // console.log("Task Created:", task);
 
     
     res.status(201).json(task);
@@ -48,7 +48,7 @@ const getTaskById: RequestHandler = async (req: Request, res: Response) => {
   try {
     const { txHash } = req.params;
     const userId = (req as any).user.id;
-    console.log("Fetching task with txHash:", txHash);
+    // console.log("Fetching task with txHash:", txHash);
     const task = await prisma.task.findFirst({
       where: {
         txHash: txHash as string,
@@ -103,7 +103,7 @@ const deleteTask: RequestHandler = async (req: Request, res: Response) => {
   try {
     const { txHash } = req.params;
     const userId = (req as any).user.id;
-    console.log("Deleting task with txHash:", txHash);
+    // console.log("Deleting task with txHash:", txHash);
     
     const task = await prisma.task.findFirst({
       where: { txHash: txHash, userId },

@@ -43,7 +43,7 @@ class CrudLibrary {
     const res = await axios.post(`${this.apiUrl}/tasks`, data, {
       headers: this.getHeaders(),
     });
-    console.log(res.data);
+    // console.log(res.data);
     return res.data;
   }
 

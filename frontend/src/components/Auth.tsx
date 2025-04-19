@@ -14,7 +14,7 @@ function Auth({ children }: { children: React.ReactNode }) {
 
     try {
       const currentUser = await getUser(storedToken);
-      console.log("Current user:", currentUser.user);
+      // console.log("Current user:", currentUser.user);
       if (currentUser) {
         localStorage.setItem("userFormpilot", JSON.stringify(currentUser.user));
         return currentUser;
