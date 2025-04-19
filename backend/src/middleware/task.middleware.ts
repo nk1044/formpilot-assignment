@@ -24,9 +24,22 @@ const verifyTask = async (req: Request, res: Response, next: NextFunction): Prom
       return
     }
 
+    if(credential.usageCount >= credential.availableUsageCount) {
+      res.status(401).json({ error: "Credit Usage limit exceeded" });
+      return;
+    }
+    const updatedCredentials = await prisma.credential.update({
+      where: {
+        id: credential.id,
+      },
+      data: {
+        usageCount: credential.usageCount + 1,
+      },
+    });
+
 
     (req as any).user = credential.user;
-    (req as any).credential = credential;
+    (req as any).credential = updatedCredentials;
 
     next();
   } catch (error) {
