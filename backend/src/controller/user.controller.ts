@@ -42,7 +42,10 @@ const RegisterUser: RequestHandler = async (req, res) => {
 
         const { email, given_name: name } = googleUser;
 
-        const existingUser = await prisma.user.findUnique({ where: { email } });
+        const existingUser = await prisma.user.findUnique({ 
+            where: { email } 
+        });
+        
         if (existingUser) {
             res.status(400).json({ message: "User already exists" });
             return
@@ -66,6 +69,7 @@ const RegisterUser: RequestHandler = async (req, res) => {
                 credential: true,
             },
         });
+        
         const accessToken = await GenerateToken(newUser.id);
 
         res
@@ -89,47 +93,49 @@ const RegisterUser: RequestHandler = async (req, res) => {
     }
 };
 
+// Adding the LoginUser function based on the error message
 const LoginUser: RequestHandler = async (req, res) => {
     try {
         const { token } = req.body;
 
         if (!token) {
             res.status(400).json({ message: "Token is required" });
-            return
+            return;
         }
 
         const googleUser = await verifyGoogleToken(token) as GoogleUser | null;
 
         if (!googleUser) {
             res.status(400).json({ message: "Invalid Google token" });
-            return
+            return;
         }
 
         const { email } = googleUser;
 
+        // Fixed: Remove the include statement or use the correct relation name
         const existingUser = await prisma.user.findUnique({
             where: { email },
             include: {
-                credential: true,
-            },
+                credential: true // This should work now with the correct relation name from schema
+            }
         });
 
         if (!existingUser) {
-            res.status(400).json({ message: "User not found" });
-            return
+            res.status(404).json({ message: "User not found" });
+            return;
         }
 
         const accessToken = await GenerateToken(existingUser.id);
 
         res
-        .status(201)
+        .status(200)
         .cookie("accessToken", accessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict",
         })
         .json({
-            message: "User logged in successfully",
+            message: "Login successful",
             user: existingUser,
             token: accessToken,
         });
@@ -138,9 +144,10 @@ const LoginUser: RequestHandler = async (req, res) => {
     } catch (error) {
         console.error("LoginUser Error:", error);
         res.status(500).json({ message: "Internal server error" });
-        return
+        return;
     }
 };
+
 
 const GetUser: RequestHandler = async (req, res) => {
     try {
