@@ -1,4 +1,12 @@
 import axios from "axios";
+// import {CrudLibrary} from '../../../npm-library/src/index';
+import {CrudLibrary} from 'neeraj-iitj-crud';
+
+
+const crudLibrary = new CrudLibrary(
+  import.meta.env.VITE_CRUD_API_URL as string,
+  import.meta.env.VITE_CRUD_API_KEY as string
+);
 
 export interface Task {
   ID?: string;
@@ -9,18 +17,23 @@ export interface Task {
 
 const backend_url = import.meta.env.VITE_BACKEND_URL as string;
 
-const GetAllTasks = async (): Promise<Task[]> => {
-  try {
-    const response = await axios.get<{ Tasks: Task[]; message: string }>(
-      `${backend_url}/api/tasks`
-    );
-    const tasks = response.data.Tasks;
-    console.log("Tasks fetched successfully:", response.data.message);
-    return tasks;
-  } catch (error) {
-    console.error("Error in GetAllTasks:", error);
-    return [];
-  }
+const GetAllTasks = async () => {
+  // try {
+  //   const response = await axios.get<{ Tasks: Task[]; message: string }>(
+  //     `${backend_url}/api/tasks`
+  //   );
+  //   const tasks = response.data.Tasks;
+  //   console.log("Tasks fetched successfully:", response.data.message);
+  //   return tasks;
+  // } catch (error) {
+  //   console.error("Error in GetAllTasks:", error);
+  //   return [];
+  // }
+
+  const response = await crudLibrary.getAll();
+  console.log("Tasks fetched successfully:", response);
+  return response;
+  
 };
 
 const CreateTask = async (task: Task): Promise<Task | null> => {

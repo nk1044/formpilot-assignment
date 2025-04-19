@@ -12,7 +12,10 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.4",
     "axios": "^1.8.4",
+    "i": "^0.3.7",
     "lucide-react": "^0.501.0",
+    "neeraj-iitj-crud": "^1.0.2",
+    "npm": "^11.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.5.1",
