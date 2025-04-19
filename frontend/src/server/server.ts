@@ -27,7 +27,23 @@ const register = async (token: string) => {
   }
 }
 
+const getUser = async (token: string = '') => {
+  try {
+    const response = await axios.get(`${backendUrl}/api/auth/get-current-user`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Get user error:", error);
+    throw error;
+  }
+}
+
+
 export {
     login,
-    register
+    register,
+    getUser
 };

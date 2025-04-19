@@ -1,49 +1,62 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from "@react-oauth/google";
-import { login, register } from "../server/server";
-
+import { login, register, getUser } from "../server/server";
 
 function Home() {
-  const [user, setUser] = useState<any>(()=> localStorage.getItem("userFormpilot") ? JSON.parse(localStorage.getItem("userFormpilot") as string) : null);
+  const [user, setUser] = useState<any>(() =>
+    localStorage.getItem("userFormpilot")
+      ? JSON.parse(localStorage.getItem("userFormpilot") as string)
+      : null
+  );
   const [error, setError] = useState<string | null>(null);
   const [pageMode, setPageMode] = useState<"login" | "register">("login");
   const navigate = useNavigate();
 
   const handleGoogleLogin = async (credentialResponse: CredentialResponse) => {
     if (credentialResponse.credential) {
-      console.log("Google Credential Response:", credentialResponse);
-      let response = null;
       try {
-        if (pageMode === "login") {
-          response = await login(credentialResponse.credential);
-          setUser(response.user);
-        } else {
-          response = await register(credentialResponse.credential);
-          setUser(response.user);
-        }
+        const response =
+          pageMode === "login"
+            ? await login(credentialResponse.credential)
+            : await register(credentialResponse.credential);
+
+        setUser(response.user);
+        localStorage.setItem("tokenFormpilot", response.token);
+        localStorage.setItem("userFormpilot", JSON.stringify(response.user));
+        setError(null);
       } catch (error) {
         console.error("Error during Google authentication:", error);
         setError("Google authentication failed. Please try again.");
-        return;
       }
-      localStorage.setItem("userFormpilot", JSON.stringify(response?.user));
-      setUser({ credential: credentialResponse.credential });
-      setError(null);
-      
     } else {
       setError("Failed to retrieve Google credentials.");
     }
   };
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    const init = async () => {
+      const storedToken = localStorage.getItem("tokenFormpilot");
+      if (storedToken) {
+        try {
+          const currentUser = await getUser(storedToken);
+          if (currentUser) {
+            setUser(currentUser);
+            localStorage.setItem("userFormpilot", JSON.stringify(currentUser));
+          }
+        } catch (error) {
+          console.error("Error fetching current user:", error);
+          localStorage.removeItem("tokenFormpilot");
+          localStorage.removeItem("userFormpilot");
+          setUser(null);
+        }
+      }
+    };
+    init();
   }, []);
 
   const handleLogout = () => {
+    localStorage.removeItem("tokenFormpilot");
     localStorage.removeItem("userFormpilot");
     setUser(null);
     navigate("/");
@@ -57,17 +70,14 @@ function Home() {
           <p className="text-neutral-400 text-lg max-w-xl mx-auto">
             Manage your content effortlessly with our sleek CRUD system. Log in to get started!
           </p>
-          {error && (
-            <p className="text-red-400 text-center text-sm mt-2">{error}</p>
-          )}
+
+          {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
 
           {!user ? (
             <div className="w-full flex justify-center mb-4">
               <GoogleLogin
                 onSuccess={handleGoogleLogin}
-                onError={() =>
-                  setError("Google authentication failed. Please try again.")
-                }
+                onError={() => setError("Google authentication failed. Please try again.")}
               />
             </div>
           ) : (
@@ -86,8 +96,7 @@ function Home() {
             </div>
           )}
 
-          {user && (
-            <div className="mt-6">
+          {!user && (
             <p className="text-center cursor-pointer text-neutral-400 mt-6 text-sm">
               {pageMode === "login" ? (
                 <>
@@ -111,7 +120,6 @@ function Home() {
                 </>
               )}
             </p>
-          </div>
           )}
         </div>
       </div>
