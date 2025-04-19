@@ -41,9 +41,27 @@ const getUser = async (token: string = '') => {
   }
 }
 
+const updateCredits = async (userId: string, token: string) => {
+  try {
+    const response = await axios.post(
+      `${backendUrl}/api/auth/update-credits`,
+      { userId },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Update credits error:", error);
+    throw error;
+  }
+};
 
 export {
     login,
     register,
-    getUser
+    getUser,
+    updateCredits
 };
